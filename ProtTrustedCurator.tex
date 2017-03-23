@@ -1,0 +1,121 @@
+\section{General Reduction}\label{sec:reduction}
+We present a general transformation, from an $m$-party coin-tossing protocol, tolerating up to $t$ corrupted parties, into an $m'$-party protocol, tolerating up to $t'$ corrupted parties, where $m<m'$ and $t'<\frac{t+1}{m+1}\cdot m'$. The protocols for which our transformation works are called \emph{Online Weighted Binomial Games} defined by \cite{HT14}.
+\begin{definition}[Online Weighted Binomial Game]
+We say that an $m$-party $r$-round coin-tossing protocol $\pi$ is an Online Weighted Binomial Game if it satisfies the following: Let $\eps\in\bias$ be a parameter of the protocol and $X_i\from\Bin{r-i+1}{\eps}$. Each round $i\in[r]$ the parties learn $f\of{i,\sum_{k=1}^i X_k}$, where $f^{\pi}$ is some randomized function. At the last round, the parties receive 1 if $\sum_{k=1}^r X_k\geq0$ and 0 otherwise, and the honest parties outputs that bit.
+\end{definition}
+
+\begin{definition}[Constant many defense fair]
+Let $\pi$ be an $m$-party, $r$-round, $(t,\alpha)$-unbiased Online Weighted Binomial Game. For a constant $\xi$ we let $\pi^{\xi}$ be the same protocol as $\pi$ except that each defense is sampled $\xi$ times and the parties uses the first sample. We say that $\pi$ is $\xi$-many defense fair if $\pi^{\xi}$ is $(t,\bO{\alpha})$-unbiased.\bnote{I believe $(t,\xi\cdot\alpha)$ is OK.} We that $\pi$ is constant many defense fair if it is $\xi$-many defense fair for every constant $\xi$.
+\end{definition}
+
+We now present our transformation. Let $n\in\N$ be a security parameter, $r=r(n)$ a polynomial, and let $m,t\in\N$ be two constants. For $k\in\set{m-t+1,\ldots,m}$, let $\pi_k$ be a $k$-party $r$-round protocol which is an \emph{Online Weighted Binomial Game}. For $i\in\set{0,1\ldots,r}$ and $J\subset[k]$, let $d_i^{\pi_k,J}$ be the $i$-th defense for the set of parties indexed by $J$. We assume \wlg that if $k$ parties aborts the execution, then the remaining parties execute protocol $\pi_{m-k}$.
+
+The idea behind our construction is the following: Let $h=m'-t'$ be the number of honest parties. If the total number of parties that have aborted since the beginning of the execution of protocol $\Pi_m$ (This is our extended protocol, which will be described later), is between $k\cdot h$ and $k\cdot h-1$, then the remaining parties execute $\Pi_{m-k}$. Therefore the number of parties that will run $\Pi_{m-k}$ is between $m'-(k+1)\cdot h+1$ and $m'-k\cdot h$. Hence in protocol $\Pi_l$, for $m-t+1<l\leq m$, the defense $d_i^{\pi_{l},J}$ will be given  to every set of parties $J'$ such that $m'-(m-|J|+1)h+1\leq|J'|\leq m'-(m-|J|)h$. This means that in order to make the parties invoke $\Pi_{|J|}$, and perhaps bias the outcome, the adversary must instruct a certain amount of parties to abort the execution. For example, consider the case in which the parties are in the middle of executing protocol $\Pi_m$, then if less than $m'-t'$ parties abort, then the parties continue, and if more abort, then the remaining parties must execute a new protocol in order to continue. In protocol $\Pi_{m-t+1}$ we will have an exception in the way the defenses are given. We will give them to every subset of size $2h-1$, similarly to the way done in \cref{protocol:multipartyAfterAbort}. This is due to the fact that if $t\cdot h$ parties aborted in total, then there is an honest majority.
+
+We now present the construction of the extended protocols $\Pi_m\ldots\Pi_{m-t+1}$. Let $n\in\N$, $r=r(n)$ a polynomial, and $m'\in\N$, $t'\in[m']$, two constants, such that $m<m'$ and $t'<\frac{t+1}{m+1}\cdot m'$. Each protocol $\Pi_k$ is a $\hat{m}_k$-party $r$-round protocol, for every $\hat{m}_k$ satisfying $m'-(m-k+1)\cdot h+1\leq\hat{m}_k\leq m'-(m-k)\cdot h$. We first describe $\Pi_{m-t+1}$.
+\begin{algorithm}($\Pi_{m-t+1}$-ShareGen)
+Let $r=r(n)$ be the number of rounds.
+\begin{description}
+	\item[Input:] The number of parties $\hat{m}$, an upper bound $\hat{t}$ on the number of corrupted parties, and $\eps_{m-t+1}\in\bias$.
+	Denote $h=\hat{m}-\hat{t}$, is the number of honest parties. Observe that a subset $J\subset[\hat{m}]$ of size $2h-1$ containing all honest parties has an honest majority.
+	\item[Selecting coins and defenses:]~
+	\begin{enumerate}
+		\item For every $J\subset[\hat{m}]$ of size $2h-1$, sample $d^J_0\from f^{\pi_{m-t+1}}(0,0)$.
+		\item For $i=1$ to $r$:
+		\begin{enumerate}
+			\item Sample $x_i\from\Bin{r-i+1}{\eps_{m-t+1}}$.
+			\item For every $J\subset[\hat{m}]$ of size $2h-1$, sample $d^J_i\from f^{\pi_{m-t+1}}\of{i,\sum\limits_{k=1}^i x_k}$.
+		\end{enumerate}
+	\end{enumerate}
+	\item[Sharing the values:]~
+	\begin{enumerate}
+		\item For $i\in[r]$ and $j\in[\hat{m}]$, let $x_i[j]$ be a share of $x_i$ in a $(\hat{t}+1)$-out-of-$\hat{m}$ secret sharing.
+		\item For $i\in\set{0,1\ldots r}$, $j\in[\hat{m}]$, and $J\subset[\hat{m}]$ of size $2h-1$, let $d_i^J[j]$ be a share of $d_i^J$ in a $h$-out-of-$(2h-1)$ secret sharing.
+		\item For $i\in[r]$, $j\in[\hat{m}]$, $J\subset[\hat{m}]$ of size $2h-1$, and $j'\in J$, $j\ne j'$ let $d_i^J[j',j]$ be a share of $d_i^J[j']$ in a $(\hat{t}+1)$-out-of-$\hat{m}$ secret sharing, such that party $P_{j'}$ is required in order to recover $d_i^J[j']$. This can be done with the \cref{construct:shareWithRespect}.
+	\end{enumerate}
+	\item[Output:] Party $P_j$ receives $d_i^{J'}[j',j]$, $d_0^J$ $x_i[j]$ for all $i\in[r]$, $J,J'\subset[\hat{m}]$ of size $2h-1$, $j\in J$ and $j'\in J'$. 
+\end{description}
+\end{algorithm}
+
+\begin{protocol}($\Pi_{m-t+1}$)\label{protocol:reductionbase}
+Let $\hat{m}$ and $\hat{t}$ two be constants, where $\hat{m}$ denotes the number of parties, and $\hat{t}$ is an upper bound in the number of corrupted parties. Let $r=r(n)$ be the number of rounds.
+\begin{description}
+\item[Common input:] Output distribution parameter $\eps_{m-t+1}$ (jointly reconstructable, possibly unknown to parties).
+\item[Private inputs:] The private inputs of the parties were given to them by an oracle computing $\Pi_{m-t+1}$-ShareGen$(\eps_{m-t+1},\hat{m},\hat{t})$.
+The input of party $P_j$ for $j\in[\hat{m}]$ is $\vect{\textbf{x}_j,\textbf{d}_j}$, where 
+$$\textbf{x}_j=\vect{x_1[j],\ldots,x_r[j]}\text{, and }\textbf{d}_j=\vect{D_0[j],D_1[j],\ldots D_r[j]},$$
+where 
+$$D_i[j]=\set{d^J_i[j',j]\cond J\subset[\hat{m}]\text{ of size } 2h-1 \wedge j'\in J}\text{, for }i\in[r],$$
+ and 
+$$D_0[j]=\set{d^J_0[j]\cond J\subset[\hat{m}]\text{ of size }2h-1 \wedge j\in J}.$$
+\item[Interaction rounds:]~\\
+		For $i=1$ to $r$:
+		\begin{enumerate}[(a)]
+			\item Each party $P_j$ sends $d^J_i[j',j]$ to $P_{j'}$ for every $j'\ne j$ and $J\subset[\hat{m}]$ of size $2h-1$ such that $j'\in J$.
+			\item The parties reconstruct $x_i$.
+		\end{enumerate}
+	\item[Output:] The honest parties output 1 if $\sum_{i=1}^r {x_i}\geq0$ and output 0 otherwise.
+	\item[In case of abort:]
+		Let $J\subset[\hat{m}]$ be the set of remaining parties. If $|J|\geq\hat{t}+1$, then the parties in $J$ go on with the execution of the protocol. Otherwise, they reconstruct $d_i^{J'}$ for the lexicographic first $J'\subset[m]$ such that $J\su J'$, and for the largest $i$ for which they have all of the corresponding shares and do as instructed in protocol $\pi_{m-t+1}$, in the case of abort.
+\end{description}
+\end{protocol}
+
+Let $l\in\set{m-t+2,\ldots m}$. We now describe the share generator for protocol $\Pi_l$.
+\begin{algorithm}($\Pi_l$-ShareGen)
+Let $r=r(n)$ be the number of rounds.
+\begin{description}
+	\item[Input:] The number of parties $m'$, an upper bound $t'$ on the number of corrupted parties, and $\eps_l\in\bias$.
+	Denote $h=m'-t'$, is the number of honest parties. In the following, for $p\in[m]$ we call a subset $J\subset[m']$ $p$-protected if $m'-(m-p+1)\cdot h+1\leq|J|\leq m'-(m-p)\cdot h$. Observe that if $J$ is $(t'+1)$-protected, then $|J|<h$. Intuitively, a set $p$-protected set, is a set of parties, for which the defense that they get is associated with $\pi_p$.
+	\item[Selecting coins and defenses:]~\\
+	For $i=1$ to $r$:
+		\begin{enumerate}
+			\item Sample $x_i\from\Bin{r-i+1}{\eps_l}$.
+			\item For every $p\in[m']$ and for every $p$-protected $J\subset[m']$, sample $d^J_i\from f^{\pi_l}\of{i,\sum\limits_{k=1}^i x_k}$.
+		\end{enumerate}
+	\item[Sharing the values:]~
+	\begin{enumerate}
+		\item For $i\in[r]$ and $j\in[m']$, let $x_i[j]$ be a share in a $(t'+1)$-out-of-$m'$ secret sharing.
+		\item For $i\in[r]$, $p,j\in[m']$, and every $p$-protected $J\subset[m']$, let $d_i^J[j]$ be a share of $d_i^J$ in a $(t'+m-p+1)$-out-of-$|J|$ secret sharing.
+		\item For $i\in[r]$, $p,j\in[m']$, every $p$-protected $J\subset[m']$, and $j'\in J$, $j\ne j'$ let $d_i^J[j',j]$ be a share of $d_i^J[j']$ in a $(t'+1)$-out-of-$m'$ secret sharing, such that party $P_{j'}$ is required in order to recover $d_i^J[j']$. This can be done with the \cref{construct:shareWithRespect}.
+	\end{enumerate}
+	\item[Output:] Party $P_j$ receives $d_i^{J'}[j',j]$ and $x_i[j]$ for all $i\in[r]$, $j'\in J'$, and every $p$-protected $J'\subset[m']$, for all $p\in[m]$. 
+\end{description}
+\end{algorithm}
+
+\begin{protocol}[$\Pi_{l}$]\label{protocol:reduction}\hfill
+\begin{description}
+	\item[Private inputs:] The private inputs of the parties were given to them by an oracle computing $\Pi_{l}$-ShareGen$(\eps_{l},m',t')$.
+The input of party $P_j$ for $j\in[m']$ is $\vect{\textbf{x}_j,\textbf{d}_j}$, where 
+$$\textbf{x}_j=\vect{x_1[j],\ldots,x_r[j]}\text{, and }\textbf{d}_j=\vect{D_1[j],\ldots D_r[j]},$$
+where 
+$$D_i[j]=\set{d^J_i[j',j]\cond J\subset[m']\text{ is p-protected} \wedge j'\in J}\text{, for }i\in[r].$$
+	\item[Interaction rounds:]~\\
+		For $i=1$ to $r$:
+		\begin{enumerate}[(a)]
+			\item Each party $P_j$ sends $d^J_i[j',j]$ to $P_{j'}$ for every $j'\ne j$ and ever p-protected $J\subset[m']$ such that $j'\in J$.
+			\item The parties reconstruct $x_i$.
+		\end{enumerate}
+	\item[Output:] The honest parties output 1 if $\sum_{i=1}^r {x_i}\geq0$ and output 0 otherwise.
+	\item[In case of abort:]
+		Let $J\subset[m']$ be the set of remaining active parties. If $|J|\geq t'+1$, then the parties in $J$ continue with the execution of the protocol. Assume that $J$ is $p$-protected for some $p\in[m]$. Then the parties in $J$ execute $\Pi_{p}$, with $d^{J'}_i[j]$ as the private input for $P_j$, for the lexicographic first $J'\subset[m']$ such that $J\su J'$, and for the largest $i$ for which they have all of the corresponding shares.
+\end{description}
+\end{protocol}
+
+\begin{theorem}\label{thm:MainResultReduction}
+	Let $m$ and $t$ be two constants such that $t<m$. Assume that for every $r$, $\pi_m$ is an $r$-round $m$-party $(t,\alpha(r))$-unbiased constant many defense fair coin-tossing protocol, tolerating any fail-stop adversary that corrupts up to $t$ parties, then for every $m<m'$ and $t'<\frac{t+1}{m+1}\cdot m'$, $\Pi_m$ is an $r$-round $m'$-party $(\bO{\alpha(r)})$-secure coin tossing protocol, in the $\set{\Pi_k\text{-ShareGen}}_{k=m-t+1}^{m}$-hybrid model (guaranteeing security with identifiable abort).
+\end{theorem}
+
+\begin{corollary}\label{corollary:MainResultReduction}
+Let $n$ be the security parameter, and let $m$ and $t$ be two constants, such that $t<m$. Further assume that there exists a protocol $\pi_m$ such that for every polynomial $r=r(n)$, $\pi_m$ is an $r$-round $m$-party $(t,\alpha(r))$-unbiased constant many defense fair coin-tossing protocol, tolerating any fail-stop adversary that corrupts up to $t$ parties. Assuming OT exists, then for every polynomial $r=r(n)$, and for every two constants $m'$ and $t'$, satisfying $m<m'$ and $t'<\frac{t+1}{m+1}\cdot m'$, there exists an $r$-round $m'$-party $\bO{\alpha\of{r}}$-secure coin-tossing protocol, against any PPT adversary corrupting up to $t'$ parties.
+\end{corollary}
+
+In order to prove \cref{thm:MainResultReduction} we first need to show that $\Pi_k$ is secure for every $k\in\set{m-t+1,\ldots,m-1}$. The security of $\Pi_k$ by itself does not suffice, as in \cref{protocol:reduction} after an abort, the adversary's view contains some additional information, and so, the following two Lemmata states that the additional information won't help him to bias the outcome. The first of the lemmata, states that \cref{protocol:reductionbase} is secure, and the second lemma states the same for $\Pi_k$ for every $k\in\set{m-t+2,\ldots,m-1}$.
+
+
+\begin{lemma}
+	Let $\eps\in\bias$, and let $m$ and $t$ be two constants such that $t<m$. Assume that for every $r$, $\pi_{m-t+1}$ is an $r$-round $(m-t+1)$-party $(1,\alpha(r))$-unbiased constant many defense fair coin-tossing protocol, tolerating any fail-stop adversary that corrupts up to $t$ parties, then for every $m<m'$ and $t'<2m'/(m-t+2)$, $\Pi_{m-t+1}$ is an $r$-round $m'$-party $(t',\bO{\alpha(r)})$-unbiased $\eps$-coin-toss protocol, tolerating any fail-stop adversary, corrupting up to $t'$ parties. Moreover, the above holds whenever the adversary gets $\eps$ as an auxiliary input.
+\end{lemma}
+
+\begin{lemma}
+	Let $\eps\in\bias$, and let $m$, $t$, and $k$ be three constants such that $t<m$ and $m-t+1<k<m$. Assume that for every $r$, $\pi_{k}$ is an $r$-round $k$-party $(t+k-m,\alpha(r))$-unbiased constant many defense fair coin-tossing protocol, tolerating any fail-stop adversary that corrupts up to $t+k-m$ parties, then for every $m<m'$ and $t'<\frac{t+k-m+1}{k+1}\cdot m'$, $\Pi_{k}$ is an $r$-round $m'$-party $(t',\bO{\alpha(r)})$-unbiased $\eps$-coin-toss protocol, tolerating any fail-stop adversary, corrupting up to $t'$ parties, in the $\set{\Pi_l\text{-ShareGen}}_{l=m-t+1}^{k}$-hybrid model (guaranteeing security with identifiable abort). Moreover, the above holds whenever the adversary gets $\eps$ as an auxiliary input.
+\end{lemma}

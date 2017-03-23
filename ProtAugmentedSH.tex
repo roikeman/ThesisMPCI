@@ -1,0 +1,204 @@
+
+
+
+\newcommand{\domain}{\mathcal{D}}
+\newcommand{\hashCounter}{m}
+\newcommand{\hashFunction}[1]{h_{#1}}
+\newcommand{\hashSet}{H}
+\newcommand{\mss}[3]{#1^{(#2)}_{#3}}
+\newcommand{\itemcount}{n}
+\newcommand{\player}[1]{p_{#1}}
+\newcommand{\playerSet}{\mathcal{P}}
+\newcommand{\playerNumber}{ | \playerSet | }
+\newcommand{\itemm}[1]{x_{#1}}
+\newcommand{\itemsSet}{\{\itemm{0},\itemm{1},\itemm{2},\dots ,\itemm{\itemcount}\}}
+\newcommand{\itemsSetSymbol}[1]{\mathcal{DB}_{#1}}
+\newcommand{\IS}{\mathcal{IS}}
+\newcommand{\ISGBF}{\IS_{(GBF)}}
+\newcommand{\rand}{Random}
+\newcommand{\buildgbf}[1]{BuildGBF(#1)}
+\newcommand{\buildbf}[1]{BuildBF(#1)}
+\newcommand{\Bf}[1]{BF_{#1}}
+\newcommand{\Gbf}[1]{GBF_{#1}}
+\newcommand{\Gbfstar}[1]{{GBF^\star}_{#1}}			
+\newcommand{\Gbfs}[2]{\Gbf{\itemsSetSymbol{#1}}^{#2}}
+\newcommand{\Gbfsstar}[2]{\Gbfstar{\itemsSetSymbol{#1}}^{#2}}
+\newcommand{\To}{\textbf{to }}
+\newcommand{\OTR}[3]{OT_{Receive}^{#1}_{#2}(#3)}
+\newcommand{\OT}[2]{OT^{#1}_{#2}}
+\newcommand{\InSecFun}[1]{f_{\cap}(#1)}
+\newcommand{\Sim}[2]{Sim_{#1}^{#2}}
+\newcommand{\rndcoins}{r}
+\newcommand{\advr}{\mathbb{A}}
+\newcommand{\myclaim}[1]{\paragraph{\textbf{Claim:} #1}}
+\newcommand{\myview}[2]{View_{#1}^{#2}}
+\newcommand{\mydefine}[2]{\paragraph{\textbf{Definition:} (#1) #2}}
+\newcommand{\idealview}[1]{IDEAL_{view}^{#1}}
+\newcommand{\realview}[1]{REAL_{view}^{#1}}
+
+%\protocol{header}{caption}{label}{protocol}
+\newcommand{\pprotocol}[5]{ {\begin{figure}[#4]
+\begin{center}
+\fbox{
+\hbox{\quad
+\begin{minipage}{0.92\textwidth}
+\begin{center}
+{\bf #1}
+\end{center}
+#5
+\end{minipage}
+\quad} }
+\caption{\label{#3} #2}
+\end{center}
+\end{figure} } }
+
+\newcommand{\myprotocol}[4]{\pprotocol{#1}{#2}{#3}{htbp}{#4}}
+\newcommand{\myprotocolh}[4]{\pprotocol{#1}{#2}{#3}{htp!}{#4}}
+\newcommand{\myprotocolhNoHead}[4]{\pprotocolNoHead{#1}{#2}{#3}{htp!}{#4}}
+
+
+\section{Multiparty PSI Protocol with Augmented Semi-Honest Security}
+
+Given $d \in \mathbb{N} $ we define domain set of words as $\domain = \{ w | w \in \{0,1\}^{d}\} $.
+
+ 
+
+Let $\player{i}$ be an entity who holds private subset $\itemsSetSymbol{i} \subset \domain$.
+Just to simplify and Without limiting the generality we assume that all $|\itemsSetSymbol{i}| = n \in \mathbb{N}$, number of item in any of the private sets.
+
+
+Given $\playerSet = \{\player{0},\player{1},\player{2},\dots,\player{\playerNumber}\}$ set of players who want calculate the set intersection $\IS = \itemsSetSymbol{0} \cap \itemsSetSymbol{1} \cap \itemsSetSymbol{2} \cap \dots \cap \itemsSetSymbol{\playerNumber} $ 
+
+$\player{0}$ will be the leader of the protocol. It have few additional work to do in the initialization and the end of the protocol. In the other parts of the protocol it will actually act like all the other Participants. 
+
+
+\myprotocol{Augmented Semi Honset Protocol For $\player{i}$}{ASHP}{Augmented Semi Honset Protocol}{
+\paragraph{{\bf INPUT:}}
+$\itemsSetSymbol{\player{i}},k,m,\lambda$
+
+\begin{enumerate}
+
+
+\item{
+{\bf Initialization Step:}
+$\player{0}$ will Randomly choose $k$ hash function set $H$, and send it to any $\player{i}\in\playerSet \setminus \player{0}$.
+
+\begin{itemize}
+\item[Any $\player{i} \in \playerSet$ will:]
+\item {Create a local $\Gbf{\itemsSetSymbol{i}} = \buildgbf{\itemsSetSymbol{i},H,k,m,\lambda}$ using the $H$ set (require for GBF intersection).}
+\item{Create a local $\Bf{\itemsSetSymbol{i}} = \buildbf{\itemsSetSymbol{i},H,k,m}$.}
+\item{Create a $\playerNumber$ GBF Shares i.e $\Gbfs{i}{0} \oplus \Gbfs{i}{1} \oplus \dots \oplus \Gbfs{i}{\playerNumber} = \itemsSetSymbol{i} $.\footnote{It should be noted that every $\Gbfs{i}{\circ}$ is equivalent to random String in length of $\lambda*m$. }}
+\end{itemize}
+}
+
+
+\item{
+{\bf OT Step:}
+\begin{itemize}
+\item[any $\player{i} \in \playerSet$:]
+\item{For each $\player{j} \in \playerSet \setminus \player{i} $}
+	\begin{itemize}
+		\item {$\player{i}$ act as OT sender and send to $\player{j}$ $m$ pairs $\lambda$ strings $(x_{(i,j,b,0)},x_{(i,j,b,1)})$ where $x_{(i,j,b,0)}$ is a uniformly $\lambda$-bit string and $x_{(i,j,b,1)} = \Gbfs{i}{j}[b]$  where $b = 0 \dots m$}	
+	
+		\item{$\player{i}$ act as OT receiver while using its local $\Bf{i}$ as selection string. i.e for $b = 0 \dots m$, $\player{i}$ will locally create $\Gbfsstar{j}{i}$ where $\Gbfsstar{j}{i}[b] = x_{(j,i,b,\Bf{i}[b])}$ }	
+	\end{itemize}
+\end{itemize}
+}
+
+
+
+\item{
+{\bf Creating Final Share Step:}
+\begin{itemize}
+\item[Any $\player{i} \in \playerSet$:]
+\item{Create GBF Share $\Gbfsstar{intersec}{i} = \Gbfsstar{0}{i} \oplus \Gbfsstar{1}{i} \oplus \dots \oplus \Gbfsstar{\playerNumber}{i}$.}
+\item{Send $\Gbfsstar{intersec}{i}$ to $\player{0}$.}
+\end{itemize}
+}
+
+\item{
+{\bf $\player{0}$ Intersection Learning Step:}
+\begin{itemize}
+\item{Create $\Gbf{intersec} = \Gbfsstar{intersec}{0} \oplus \Gbfsstar{intersec}{1} \oplus \dots \oplus \Gbfsstar{intersec}{\playerNumber}$.}
+\item{For any $item \in \itemsSetSymbol{0}$ that $GBFQuery(\Gbf{intersec},item) = 1$ than $item \in \IS$}
+\item{$\player{0}$ send $\IS$ to the other $\player{1}\dots \player{\playerNumber}$.}
+\end{itemize}
+}
+
+
+
+
+\end{enumerate}
+
+\paragraph{\bf{OUTPUT:}} $\player{0}$ will output $\IS$.
+}
+
+\subsection{Security Analysis}
+\iffalse	%comment ----------------------------------------------
+Security proof of the augmented semi-hones protocol:
+\theorem{Given $\playerSet$ set of $\playerNumber$ parties, Let $\itemsSetSymbol{i}$ be private set of $\itemcount$ items from a predefined universe, $\InSecFun$ be the intersection function.}
+
+\proof{
+If the $\OT{\lambda}{m}$ is secure the the simulator for the sender and receiver a	 exist. we can use them as subroutines when construction our simulators.
+
+\textbf{$\player{i}$'s view:} we construct a simulator $\Sim{\player{i}}{}$ that receives the $\player{i}$ private input and generates the view of the $\player{i}$ in the protocol. Given $\itemsSetSymbol{i}$, the simulator $\Sim{\player{i}}{}$ uniformly chooses its random coins $\rndcoins$ and generate $\Bf{\itemsSetSymbol{i}},\Gbf{\itemsSetSymbol{i}}$ and it's $\playerNumber$ shares.
+Then $\Sim{\player{i}}{}$ invokes the $(\playerNumber -1)$ simulations of the OT as sender $\Sim{snd}{OT}$ with $\Gbf{\itemsSetSymbol{i}}$ and OT receiver $\Sim{rcv}{OT}$  with $\Bf{\itemsSetSymbol{i}}$ that is guaranteed to exist. Then create the final share.
+Finally  $\Sim{\player{i}}{}$ return the simulated view $(\itemsSetSymbol{i},\Sim{snd}{OT},\Sim{rcv}{OT},\{\Gbfsstar{0}{i}\dots\Gbfsstar{\playerNumber}{i}\},\Gbf{\itemsSetSymbol{i}},\Bf{\itemsSetSymbol{i}}, \Gbfsstar{intersec}{\player{i}}$ 
+
+In the real protocol view contain the input set $\itemsSetSymbol{i}$, the random coins and Shares 
+\fi			%comment ----------------------------------------------
+
+Security proof of the augmented semi-hones protocol:
+\theorem{Assume that OT protocol is secure for semi honest adversaries, If our $\pi$ protocol is secure against augmented any semi honest adversaries.}
+
+
+
+Using the hybrid model technicue we can proving our protocol when every operation of OT in the real protocol will present as communication with trusted thread-party who get the input of both, sender and receiver, and return output each side the output they would get from the real OT Protocol. Because we assume that OT is secure, If our hybrid protocol will prove as secure, it will drag it that our real protocol is secure.
+
+\begin{itemize}
+\item[We describe two worlds:]
+\item{ \textbf{IDEAL:} All party send private $\itemsSetSymbol{}$ to an incorruptible third-party. Then the third-party send back the $\IS$ to $\player{0}$.}
+
+\item{\textbf{REAL hybrid:} All party execute protocol $\pi$ as is, but, in the OT Step will use third-party instead of two-party OT Protocol.}
+
+\end{itemize}
+\mydefine{Ideal View}{Given valid IDEAL protocol exaction $\idealview{\player{i}}$ is include $\player{i}$ private input and the T.P output. i.e $(\itemsSetSymbol{i})$}
+
+\mydefine{Simulator}{Given valid IDEAL protocol exaction, for every parties set $S \subseteq \playerSet$, $\Sim{}{\pi}(\idealview{S})$ is a valid view collection of any $p\in S$ in REAL $\pi$ exaction. It include all private inputs, and all massages that send and receive by $\player \in S$.}
+
+
+
+\myclaim{For any parties $S \subseteq \playerSet$, given $\idealview{S}$ a $\Sim{}{\pi}(\idealview{S})$ is exist.}
+
+\definition{Our Simulator: Given $\playerSet$ a players set, $S \subsetneq \playerSet$ a set of corrupted players. Our simulator communicate with the IDEAL third-party and got $\IS$. Then by using $\idealview{S}$ and $\IS$ it simulate $\realview{}{S}$.
+\begin{enumerate}
+	\item{$\Sim{}{\pi}$ send the corrupted players inputs to the IDEAL third-party and got back $\IS$.}
+	\item{$\Sim{}{\pi}$ choose k hash function set $\hashSet$.}
+	\item{For any honest player $\player{i}\notin S$ because $\itemsSetSymbol{i}$ is not in $\idealview{S}$ then $\Sim{}{\pi}$ will create $\itemsSetSymbol{i}^{\star} = \IS$}
+	\item{ 	\begin{itemize}
+				\item[For any $\player{i}\in \playerSet$] 
+				\item{$\Sim{}{\pi}$ create $\Gbf{\itemsSetSymbol{i}}$ and $\Bf{\itemsSetSymbol{i}}$ as describe in [?]}
+				\item{$\Sim{}{\pi}$ create $\playerNumber$-shares of $\Gbf{\itemsSetSymbol{i}}$ as describe in [?].}
+				\begin{itemize}
+				\item [For every $\player{j} \in \playerSet \setminus \{\player{i}\}$]  
+					\item{$\Sim{}{\pi}$ create $\Gbfsstar{j}{i}$ share: where $b = 0 \dots m$, \bf{if} ($\Bf{i}[b]==1$) \bf{then} $\Gbfsstar{j}{i}[b] = \Gbfs{j}{i}[b]$, else $\Gbfsstar{j}{i}[b] = \rndcoins^{\lambda}$ }
+					\item{$\Sim{}{\pi}$ create the final share describe in [?].}
+				\end{itemize}
+				
+				
+				
+			\end{itemize}
+	\item{$\Sim{}{\pi}$ return a view that include, for any $\player{i} \in S$: $(\itemsSetSymbol{i}, \Gbfs{i}{0}\dots \Gbfs{i}{\playerNumber},\Gbfsstar{0}{i}\dots \Gbfsstar{\playerNumber}{i}, \IS)$.}
+	}
+	
+\end{enumerate}
+
+
+}
+
+
+
+
+\myclaim{For any size $\playerNumber \geq 2$, and any $S \subset \playerSet$ it implies that $\realview{\pi} \equiv \Sim{IDEAL}{\pi}$}.
+
+\proof{\}

@@ -1,0 +1,23 @@
+\begin{thebibliography}{2}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Bose et~al.(2008)Bose, Guo, Kranakis, Maheshwari, Morin, Morrison,
+  Smid, and Tang]{bose2008false}
+P.~Bose, H.~Guo, E.~Kranakis, A.~Maheshwari, P.~Morin, J.~Morrison, M.~Smid,
+  and Y.~Tang.
+\newblock On the false-positive rate of bloom filters.
+\newblock \emph{Information Processing Letters}, 108\penalty0 (4):\penalty0
+  210--213, 2008.
+
+\bibitem[Dong et~al.(2013)Dong, Chen, and Wen]{dong2013private}
+C.~Dong, L.~Chen, and Z.~Wen.
+\newblock When private set intersection meets big data: an efficient and
+  scalable protocol.
+\newblock In \emph{Proceedings of the 2013 ACM SIGSAC conference on Computer \&
+  communications security}, pages 789--800. ACM, 2013.
+
+\end{thebibliography}

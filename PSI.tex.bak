@@ -1,0 +1,181 @@
+%\def\draft{1} % for draft version, set draft = 1
+%\def\fullV{0}
+%&pdflatex
+\def\IsDraft{} % set for draft version
+%\def\IsSubmission{} % set for submission version
+\def\IsLLNCS{} % set for draft version
+%\def\IsAnon{} % set for an anonymous version
+%\def\IsCR{} % set for camera ready version
+
+
+\ifdefined\IsLLNCS
+\documentclass{llncs}
+\usepackage{amsfonts,amsmath,amssymb,boxedminipage,color,url,nccmath}
+\pagestyle{plain}
+\else
+\documentclass[11pt]{article}
+\usepackage{amsfonts,amsmath,amssymb,amsthm,boxedminipage,color,url,fullpage,nccmath}
+\fi
+
+%\def\IsDVI{} % set to resolve conflict with hyperref when using DVI viewer
+\ifdefined\IsDVI
+\usepackage[hypertex,pdfstartview=FitH,colorlinks,linkcolor=blue,filecolor=blue,citecolor=blue,urlcolor=blue]{hyperref} % blue linkss
+\else
+\usepackage[pdfstartview=FitH,colorlinks,linkcolor=blue,filecolor=blue,citecolor=blue,urlcolor=blue]{hyperref} % blue linkss
+\fi
+
+
+\usepackage{enumerate,paralist}
+\usepackage[labelfont=bf]{caption}
+
+\usepackage{lmodern}% to remove LaTeX font warnings (Using lmodern removes this restriction by allowing font sizes at arbitrary sizes)
+
+\usepackage[bottom]{footmisc} % to make the footnote stay at the bottom of the page...
+
+\usepackage{aliascnt}
+\usepackage[numbers]{natbib} % \citet{foo} -> Foo et al. [5]
+
+\usepackage{cleveref}
+\usepackage{xspace}
+\usepackage{xstring}
+
+\usepackage{tikz}\usetikzlibrary{arrows}
+\usetikzlibrary{decorations.markings}
+\usepackage{subcaption}
+
+\usepackage{caption}
+\usepackage{algpseudocode}
+
+
+\ifdefined\IsLLNCS
+\setcounter{secnumdepth}{3} % needed in order to number subsubsection in LNCS format
+\fi
+
+\input{macros}
+
+%Per paper definitions
+\newcommand{\enote}[1]{\authnote{Eran}{#1}}
+\newcommand{\rnote}[1]{\authnote{Roi}{#1}}
+\newcommand{\Enote}[1]{\authnote{Eran}{#1}}
+\newcommand{\Rnote}[1]{\authnote{Roi}{#1}}
+
+
+\newcommand{\Ber}{\B er}
+\newcommand{\Bin}[2]{\B in_{#1,#2}}
+\newcommand{\Binhat}[2]{\widehat{\B in}_{#1,#2}}
+\newcommand{\BinU}[1]{\B in_{#1}}
+\newcommand{\BinUhat}[1]{\widehat{\B in}_{#1}}
+\newcommand{\HG}[3]{\h G_{#1,#2,#3}}
+\newcommand{\HGhat}[3]{\widehat{\h G}_{#1,#2,#3}}
+
+\newcommand{\D}{\mathcal{D}}
+\newcommand{\X}{\mathcal{X}}
+\newcommand{\Y}{\mathcal{Y}}
+\renewcommand{\S}{\mathcal{S}}
+\renewcommand{\C}{\mathcal{C}}
+\newcommand{\adv}{\mathcal{A}}
+\newcommand{\A}{\adv}
+\newcommand{\NN}{\N}
+\newcommand{\FF}{{\mathbb F}}
+\newcommand{\innerp}{\operatorname{inner}}
+\newcommand{\aux}{\operatorname{aux}}
+\newcommand{\masking}[2]{\operatorname{mask}_{#2}{(#1)}}
+\newcommand{\compl}[1]{\operatorname{comp}{(#1)}}
+\newcommand{\complParty}[2]{\operatorname{comp}_{#2}{(#1)}}
+
+\newcommand{\rembits}[1]{s_{#1}}
+\newcommand{\MultipartyShareGen}{\operatorname{MultipartyShareGen}}
+\newcommand{\bias}{\seg{-\frac12}{\frac12}}
+\newcommand{\numRounds}{r}
+\renewcommand{\out}{\operatorname{out}}
+
+\def\partNum{{m}}
+\def\badNum{{t}}
+\def\goodNum{{m-t}}
+\def\secParam{{n}}
+%%%%%%%%%%%%%% from BOO10 %%%%%%%%%%%%%%%
+\newcommand{\MultiShareGen}{\operatorname{MultiShareGen}}
+\newcommand{\MSG}{\operatorname{MPSG}}
+\newcommand{\ShareGenForFive}{\operatorname{ShareGenForFive}}
+\newcommand{\ShareGenWithAbort}{\operatorname{ShareGenWithAbort}}
+\newcommand{\CoinTossWithDealer}{\operatorname{CTWithD}}
+\newcommand{\FairCoinToss}{\operatorname{FairCoinToss}}
+\newcommand{\CoinTossWithOffLineDealer}{\operatorname{MultiPartyCoinTossWithOffLineDealer}}
+\newcommand{\FivePartyCoinTossWithDealer}{\operatorname{FivePartyCoinTossWithDealer}}
+\newcommand{\CoinToss}{\operatorname{CoinToss}}
+\newcommand{\CoinTossForConstantFraction}{\operatorname{CoinTossForConstantFraction}}
+\newcommand{\FivePartyCoinToss}{\operatorname{FivePartyCoinToss}}
+\newcommand{\before}{\operatorname{``before''}}
+\newcommand{\after}{\operatorname{``after''}}
+\newcommand{\during}{\operatorname{``during''}}
+\newcommand{\PT}{\operatorname{PT}}
+\newcommand{\activeLex}{{J_L}}
+
+\newcommand{\outBit}{{w}}
+\newcommand{\outBitSim}{{w_S}}
+\newcommand{\outBitVAR}{{C}}
+\newcommand{\viewVAR}{{V}}
+\newcommand{\keyVAR}{{K_\operatorname{SIGN}}}
+\newcommand{\outBitVar}{{c}}
+\newcommand{\viewVar}{{v}}
+\newcommand{\keyVar}{{\operatorname{keys}}}
+\newcommand{\bitView}{{\gamma}}
+\newcommand{\ninePartyCoinTossWithDealer}{\operatorname{ninePartyCoinTossWithDealer}}
+\newcommand{\improvedMultiPartyCoinTossWithDealer}{\operatorname{improvedMultiPartyCoinTossWithDealer}}
+\newcommand{\improvedMultiPartyShareGen}{\operatorname{improvedMultiShareGen}}
+\newcommand{\improvedMultiPartyCoinToss}{\operatorname{improvedMultiPartyCoinToss}}
+\newcommand{\Reconstruction}{\operatorname{Reconstruction}}
+\newcommand{\continueMSG}{``\operatorname{\texttt{continue}}\textrm{''}}
+\newcommand{\abort}[1]{{``\operatorname*{\texttt{abort}}}_{#1}\textrm{''}}
+
+
+\newcommand{\titlename}{Efficient Semi-Honest Multiparty Private Set-Intersection via Bloom Filters}
+
+
+
+\title{\titlename\TLLNCS{\thanks{Research supported by ISF grant 544/13.}}{\thanks{Department of Computer Science, Ariel University. E-mail: \texttt{omrier@ariel.ac.il}. Research supported by ISF grant 544/13.}}
+\Draft{\\{\small \sc Working Draft: Please Do Not Distribute}}
+}
+
+\ifdefined\IsAnon
+    \author{}
+    \date{}
+    \LLNCS{ \institute{}}
+\else
+
+    \ifdefined\IsLLNCS
+        \author{Roi Inbar
+        \and Eran Omri}
+        \institute{Department of Computer Science, Ariel University\\ \email{roikeman@gmail.com, omrier@ariel.ac.il}}
+    \else
+        \author{Roi Inbar
+        \and Eran Omri}
+     \fi
+\fi
+
+\begin{document}
+\sloppy
+\maketitle
+\begin{abstract}
+\enote{TO DO}
+\end{abstract}
+
+%\noindent\textbf{Keywords: coin-tossing; coin-flipping; protocols; fairness; fair computation; dishonest majority.}
+
+\Tableofcontents
+\input{Introduction}
+\input{Prelim}
+\input{ProtAugmentedSH}
+\input{ProtFullSH}
+\input{ExperimentalRes}
+
+%\subsection*{Acknowledgements}
+
+
+\bibliographystyle{abbrvnat}
+\bibliography{crypto}
+
+%\input{AppendPrelim}
+%\input{proof-extendedHG}
+
+\end{document}

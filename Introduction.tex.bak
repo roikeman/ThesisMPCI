@@ -1,0 +1,47 @@
+
+\section{Introduction}\label{section:intro}
+\begin{enumerate}
+\item PSI as an important special case of MPC.
+\item 2party PSI
+	\item A Bloom filter is a compact data structure to encode set of
+	elements, with only a small false positive probability.
+	\item Efficiency and privacy.
+	\item Our Results
+	\item The full semi-honest model vs.~the augmented semi-honest model. We obtain both, and the while total complexity does suffer from the distinction, there is no penalty when considering the maximum complexity of a single party.  Our transformation is applicable to previous protocols as well.
+	\item The trusted curator model. An OT-free protocol.
+	\item Consider the following improvements in terms of complexity and of privacy.
+	\begin{enumerate}
+		\item Sending seeds to a PRG instead of SSS shares.
+		\item 
+	\end{enumerate}	
+	\item -- Japanese guys -- did not implement. Bloom filter (not garbled). They use homomorphic encryption to compute the $i$'th bit in the filter as the AND of all bits. 
+\end{enumerate}
+
+For example, PSI can be used by a governmental agency that performs a search over every flight
+passenger's list of every airline to assure none of the passengers is on its no-
+y list. While both
+the governmental agency and airline are interested to keep their lists as private as possible it is not
+mandatory as it is a national security issue. For commercial companies that would like to intersect
+their lists of clients to increase their profits the demand for privacy becomes a necessity.
+
+questions to Aner:
+\begin{enumerate}
+	\item Should we come up with public keys.
+	\item How to implement the OT extension.
+	\item How to implement a PRG
+\end{enumerate}
+
+There has also been substantial work aiming at constructing concretely efficient secure protocols for specific functionalities. The motivation is to come up with protocols that are far more efficient than an application of the generic protocols for that functionality. 
+
+A problem of great importance and usability in the realm secure computation is that of \emph{private set intersection} (PSI), motivated, e.g., by database operations. Here a set of parties, each holding a large private data-set, wish to compute the intersection over all data-sets.  Much research was dedicated to the construction of PSI-tailored highly efficient protocols for the case of two-party  set intersection. A survey of the abundance of works on efficient two-party PSI protocols is given in~\citet{PSZ16}, including a classification of the underlying techniques. To our discussion, most relevant are the public-key-based PSI protocols (see, e.g.,~\cite{FNP04,FHNP16,CT10}) and the oblivious-transfer based and oblivious-pseudo-random-function based  PSI protocols (see, e.g.,~\cite{DCW13,KK13,P0Z14}). Interestingly, in spite of the clear incentive, we are not aware of any published work on purpose-tailored protocols for multiparty PSI. 
+
+\begin{quote}
+Construct  concretely efficient protocols for  multiparty private set intersection tolerating semi-honest/malicious adversaries.
+\end{quote}
+
+
+Very relevant known results.
+
+\subsection{Our Contribution}
+
+\subsection{More Related Work}

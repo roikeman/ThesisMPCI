@@ -1,0 +1,119 @@
+
+\section{Preliminaries}\label{sec:prelim}
+\subsection{Notation}
+We use calligraphic letters to denote sets, uppercase for random variables, and lowercase for values. 
+%All logarithms considered here are in base two. 
+For $n\in\N$, let $[n]=\{1,\ldots, n\}$. Given a random variable (or a distribution) $X$, we write $x\la X$ to indicate that $x$ is selected according to $X$. The support of a distribution $D$ over a finite set $S$, denoted $\Supp(D)$, is defined as $\left\{s\in S\cond D(s)>0\right\}$. For a random variable $X$ and a natural number $n$ we let $X^n=\vect{X^{(1)},X^{(2)},\ldots,X^{(n)}}$, where the $X^{(i)}$'s are i.i.d. copies of $X$.
+
+
+\section{Secure Multiparty Computation and the Private Set Intersection Functionality}
+
+\subsection{Cryptographic Tools}
+\subsubsection{Bloom Filters}\label{sec:bflabel}
+ is a compact data structure for probabilistic set membership testing.
+ A Bloom filter is a bits array in length of $m\in \mathbb{N}$. The operations of inserting new item or checking if item is already inserted require predefined $k$ uniform hash function set $H$, when  $\forall h \in H \to h(item)=[0..m]$.
+In order to insert given item is simply, set bits in the $k$-indexes that returned from the Hash functions set $H$ to 1.
+An given item that all bits in the $k$-indexes of this item is equal 1 will consider as already inserted item.\\
+The probability for false-negative is 0.
+The probability for false-positive is exist \cite{bose2008false} and can be reduce to Negligible probability by increasing the array size.\\
+Bloom filter had useful feature for intersection between two Bloom filters: given two $m$-sized arrays of Bloom filter $A[],B[]$ that created by the same hash function set $H$. we can create the $m$ array of bloom filter $C = A\cap B$ by AND bit-wise operator between $A[]$ and $B[]$. 
+
+\begin{algorithm}[H]
+\textbf{Bloom filter}
+\begin{algorithmic}[1]
+\Procedure{BFinsert}{$item,BFarray[],m,k,H$}
+\For{$i:=0..k$}
+	\State{$hash \gets H[i]$}
+	\State{$index \gets hash(item)$} \Comment{index will be between $0$ to $m$}
+	\State{$BFarray[index]\gets 1$}
+\EndFor
+\EndProcedure
+
+\Function{BFchecking}{$item,BFarray[],m,k,H$}
+\For{$i:=0..k$}
+	\State{$hash \gets H[i]$}
+	\State{$index \gets hash(item)$} \Comment{index will be between $0$ to $m$}
+	\If{$BFarray[index] = 0$} 
+	\State \Return False
+	\EndIf
+\EndFor
+\State \Return True
+\EndFunction
+
+\Function{BFintersec}{$BFarray_1[],BFarray_2[],m$}
+\For{$i:=0..m$}
+\State {$BFintersection[i] \gets BFarray_1[i] \wedge BFarray_2[i]$}
+\EndFor
+\State \Return $BFarrayOfIntersec[]$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+
+\subsubsection{Garbled Bloom Filters}
+ (GBF) is a new variant of Bloom Filters Data structure \cite{dong2013private}. By expend any bit in the Bloom filter Array to $\lambda$-bit string, we give up the compact attribute, but receive new feathers we will describe in the end of this section.\\
+GBF is a array of $m\in \mathbb{N}$ fixed $\lambda\in \mathbb{N}$ length strings. The operations of inserting new item or checking if item is already inserted will require predefined $k$ hash function set $H$ as describe in \ref{sec:bflabel}.\\
+Insert Given Item: for any index from the $k$-indexes we choose empty one and keep it as $finalIndex$. for each one of other $k-1$ indexes, if it empty we will fill it with $\lambda$ length random string. Otherwise we will do noting.
+Then we fill the $finalIndex$ with the bit-wise xor of all the $k-1$ strings we fill already.\\
+
+\iffalse %--------------------------COMMENT-----------------------------------
+\begin{algorithm}[H]
+\textbf{Garbled Bloom filter}
+\begin{algorithmic}[1]
+\Procedure{GBFinsert}{$item,GBFarray[],m,k,H,\lambda$}
+\State {$finalString \gets \{0^\lambda\}$}
+\State {$finalStringIndex \gets empty$}
+\For{$i:=0..k$}
+	\State{$hash \gets H[i]$}
+	\State{$index \gets hash(item)$} 
+		\If{$GBFarray[index]$ is empty}
+			\If{$finalStringIndex = empty$}
+				\State{$finalStringIndex \gets i$}
+			\Else
+				\State {$r \gets RandomString(\lambda)$}
+				\State{$GBFarray[index] \gets r$}	
+				\State{$finalString \gets finalString \oplus r$}
+			\EndIf		
+		\Else
+		\State {$finalString \gets finalString \oplus GBFarray[index]$}
+		\EndIf
+\EndFor
+\State {$GBFarray[finalStringIndex] \gets finalString$}
+\EndProcedure
+
+\Function{GBFchecking}{$item,BFarray[],m,k,H$}
+\For{$i:=0..k$}
+	\State{$hash \gets H[i]$}
+	\State{$index \gets hash(item)$} \Comment{index will be between $0$ to $m$}
+	\If{$BFarray[index] = 0$} 
+	\State \Return False
+	\EndIf
+\EndFor
+\State \Return True
+\EndFunction
+
+\Function{GBFintersec}{$BFarray_1[],BFarray_2[],m$}
+\For{$i:=0..m$}
+\State {$BFintersection[i] \gets BFarray_1[i] \wedge BFarray_2[i]$}
+\EndFor
+\State \Return $BFarrayOfIntersec[]$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\fi%--------------------------COMMENT-----------------------------------
+
+
+ 
+ 
+\subsubsection{Threshold Secret Sharing Schemes}
+ 
+\subsubsection{Garbled Bloom Filters with Shares} By Using simple xor sharing of the GBF strings array we can use the same mechanism of GBF intersection and in the same time keeping the final intersection GBF unreadable unless all the shares will combined together.
+
+
+ 
+ 
+ 
+\subsubsection{Oblivious Transfer}
+
+
